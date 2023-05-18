@@ -5,6 +5,7 @@
 //  Created by Gilang Aditya Rahman on 10/05/23.
 //
 
+import Firebase
 import UIKit
 
 class LoginController: UIViewController {
@@ -26,9 +27,10 @@ class LoginController: UIViewController {
 
   private let passwordTextField: UITextField = UITextField().textField(withPlaceholder: "Password", isSecureTextEntry: true)
 
-  private let loginButton: AuthButton = {
+  private lazy var loginButton: AuthButton = {
     let button = AuthButton(type: .system)
     button.setTitle("Login", for: .normal)
+    button.addTarget(self, action: #selector(handleSignin), for: .touchUpInside)
     return button
   }()
 
@@ -47,6 +49,19 @@ class LoginController: UIViewController {
   @objc func handleShowSignUp() {
     let controller = SignUpController()
     navigationController?.pushViewController(controller, animated: true)
+  }
+
+  @objc func handleSignin() {
+    guard let email = emailTextField.text?.lowercased() else { return }
+    guard let password = passwordTextField.text else { return }
+    Auth.auth().signIn(withEmail: email, password: password) { _, error in
+      if let error = error {
+        print("Failed to login \(error.localizedDescription)")
+        return
+      }
+
+      self.dismiss(animated: true)
+    }
   }
 
   // MARK: - Lifecycle

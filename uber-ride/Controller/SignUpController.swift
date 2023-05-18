@@ -5,6 +5,7 @@
 //  Created by Gilang Aditya Rahman on 12/05/23.
 //
 
+import Firebase
 import UIKit
 
 class SignUpController: UIViewController {
@@ -46,9 +47,10 @@ class SignUpController: UIViewController {
     return sc
   }()
 
-  private let signUpButton: AuthButton = {
+  private lazy var signUpButton: AuthButton = {
     let button = AuthButton(type: .system)
     button.setTitle("Signup", for: .normal)
+    button.addTarget(self, action: #selector(handleSignup), for: .touchUpInside)
     return button
   }()
 
@@ -73,6 +75,26 @@ class SignUpController: UIViewController {
 
   @objc func handleShowLogin() {
     navigationController?.popViewController(animated: true)
+  }
+
+  @objc func handleSignup() {
+    guard let email = emailTextField.text?.lowercased() else { return }
+    guard let password = passwordTextField.text else { return }
+    guard let fullname = fullnameTextField.text else { return }
+    let accountTypeIndex = accountTypeSegmentedControl.selectedSegmentIndex
+
+    Auth.auth().createUser(withEmail: email, password: password) { result, error in
+      if let error = error {
+        print("Failed to register user with error \(error)")
+      }
+
+      guard let uid = result?.user.uid else { return }
+      let values = ["email": email, "fullname": fullname, "accountType": accountTypeIndex] as [String: Any]
+
+      Database.database().reference().child("users").child(uid).updateChildValues(values) { _, _ in
+        self.dismiss(animated: true)
+      }
+    }
   }
 
   // MARK: - Helpers
