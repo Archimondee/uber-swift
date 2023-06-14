@@ -6,10 +6,13 @@ target 'uber-ride' do
   use_frameworks!
 
   # Pods for uber-ride
-  pod 'Firebase/Core'
   pod 'Firebase/Database'
   pod 'Firebase/Storage'
   pod 'Firebase/Auth'
   pod 'SDWebImage'
+  pod 'GeoFire'
+  
+  pod 'Firebase', :modular_headers => true
+  pod 'FirebaseCore', :modular_headers => true
 
 end

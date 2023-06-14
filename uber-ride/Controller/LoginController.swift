@@ -6,10 +6,13 @@
 //
 
 import Firebase
+import GeoFire
 import UIKit
 
 class LoginController: UIViewController {
   // MARK: - Properties
+
+  private var location = LocationHandler.shared.locationManager.location
 
   private let titleLabel: UILabel = {
     let label = UILabel()
@@ -54,10 +57,19 @@ class LoginController: UIViewController {
   @objc func handleSignin() {
     guard let email = emailTextField.text?.lowercased() else { return }
     guard let password = passwordTextField.text else { return }
-    Auth.auth().signIn(withEmail: email, password: password) { _, error in
+    Auth.auth().signIn(withEmail: email, password: password) { user, error in
       if let error = error {
         print("Failed to login \(error.localizedDescription)")
         return
+      }
+      guard let uid = user?.user.uid else { return }
+
+      Service.shared.fetchUserData(uid: uid) { result in
+        if result.accountType == .driver {
+          let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATIONS)
+          guard let location = self.location else { return }
+          geofire.setLocation(location, forKey: uid)
+        }
       }
 
       self.dismiss(animated: true)
@@ -71,11 +83,17 @@ class LoginController: UIViewController {
     configureUI()
   }
 
-//  override var preferredStatusBarStyle: UIStatusBarStyle {
+  //  override var preferredStatusBarStyle: UIStatusBarStyle {
 //    return .lightContent
-//  }
+  //  }
 
   // MARK: - Helper
+
+  func uploadUserDataAndNavigate(uid: String, values: [String: Any]) {
+    REF_USERS.child(uid).updateChildValues(values) { _, _ in
+      self.dismiss(animated: true)
+    }
+  }
 
   func configureUI() {
     view.backgroundColor = .backgroundColor

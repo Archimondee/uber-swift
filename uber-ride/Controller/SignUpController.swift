@@ -6,10 +6,13 @@
 //
 
 import Firebase
+import GeoFire
 import UIKit
 
 class SignUpController: UIViewController {
   // MARK: - Properties
+
+  private var location = LocationHandler.shared.locationManager.location
 
   private let titleLabel: UILabel = {
     let label = UILabel()
@@ -91,9 +94,14 @@ class SignUpController: UIViewController {
       guard let uid = result?.user.uid else { return }
       let values = ["email": email, "fullname": fullname, "accountType": accountTypeIndex] as [String: Any]
 
-      Database.database().reference().child("users").child(uid).updateChildValues(values) { _, _ in
-        self.dismiss(animated: true)
+      if accountTypeIndex == 1 {
+        let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATIONS)
+        guard let location = self.location else { return }
+        geofire.setLocation(location, forKey: uid) { _ in
+          self.uploadUserDataAndNavigate(uid: uid, values: values)
+        }
       }
+      self.uploadUserDataAndNavigate(uid: uid, values: values)
     }
   }
 
@@ -127,5 +135,11 @@ class SignUpController: UIViewController {
   func configureNavigationBar() {
     navigationController?.navigationBar.isHidden = true
     navigationController?.navigationBar.barStyle = .black
+  }
+
+  func uploadUserDataAndNavigate(uid: String, values: [String: Any]) {
+    REF_USERS.child(uid).updateChildValues(values) { _, _ in
+      self.dismiss(animated: true)
+    }
   }
 }
