@@ -71,8 +71,12 @@ class LoginController: UIViewController {
           geofire.setLocation(location, forKey: uid)
         }
       }
-
-      self.dismiss(animated: true)
+      DispatchQueue.main.async {
+        let nav = UINavigationController(rootViewController: HomeController())
+        nav.modalPresentationStyle = .fullScreen
+        self.present(nav, animated: true, completion: nil)
+      }
+      //self.dismiss(animated: true)
     }
   }
 

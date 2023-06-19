@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7AF714C2E0A9163D397E50C0 /* Pods_uber_ride.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1540608DFC62E088818BFC9 /* Pods_uber_ride.framework */; };
 		F40ECEBC2A16ACB1007E4342 /* LocationInputActivationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40ECEBB2A16ACB1007E4342 /* LocationInputActivationView.swift */; };
+		F418FE382A3A3CBA002DCEB0 /* PickupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F418FE372A3A3CBA002DCEB0 /* PickupController.swift */; };
 		F43718202A0ACB73008B82DD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F437181F2A0ACB73008B82DD /* AppDelegate.swift */; };
 		F43718222A0ACB73008B82DD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F43718212A0ACB73008B82DD /* SceneDelegate.swift */; };
 		F43718292A0ACB74008B82DD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F43718282A0ACB74008B82DD /* Assets.xcassets */; };
@@ -34,6 +35,7 @@
 		D1540608DFC62E088818BFC9 /* Pods_uber_ride.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_uber_ride.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E842A51606941C1F739761AA /* Pods-uber-ride.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-uber-ride.debug.xcconfig"; path = "Target Support Files/Pods-uber-ride/Pods-uber-ride.debug.xcconfig"; sourceTree = "<group>"; };
 		F40ECEBB2A16ACB1007E4342 /* LocationInputActivationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationInputActivationView.swift; sourceTree = "<group>"; };
+		F418FE372A3A3CBA002DCEB0 /* PickupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupController.swift; sourceTree = "<group>"; };
 		F437181C2A0ACB73008B82DD /* uber-ride.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "uber-ride.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F437181F2A0ACB73008B82DD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F43718212A0ACB73008B82DD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 				F43718382A0ACCA9008B82DD /* LoginController.swift */,
 				F49813A82A0D69340001EF93 /* SignUpController.swift */,
 				F4F254EA2A0EB7EE00590310 /* HomeController.swift */,
+				F418FE372A3A3CBA002DCEB0 /* PickupController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -290,6 +293,7 @@
 				F4F254EB2A0EB7EE00590310 /* HomeController.swift in Sources */,
 				F48869C22A17EED100D89819 /* LocationInputView.swift in Sources */,
 				F4869D2A2A38F19100421987 /* Trip.swift in Sources */,
+				F418FE382A3A3CBA002DCEB0 /* PickupController.swift in Sources */,
 				F46E66EB2A2676720000DD7A /* DriverAnnotation.swift in Sources */,
 				F43718202A0ACB73008B82DD /* AppDelegate.swift in Sources */,
 				F43718392A0ACCA9008B82DD /* LoginController.swift in Sources */,

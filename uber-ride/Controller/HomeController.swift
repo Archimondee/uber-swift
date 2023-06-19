@@ -32,12 +32,29 @@ class HomeController: UIViewController {
   private var searchResults = [MKPlacemark]()
   private final let locationInputViewHeight: CGFloat = 200
   private final let rideActionViewHeight: CGFloat = 300
+  private var trip: Trip? {
+    didSet {
+      guard let user = user else { return }
+
+      if user.accountType == .driver {
+        guard let trip = trip else { return }
+        let controller = PickupController(trip: trip)
+        controller.delegate = self
+        controller.modalPresentationStyle = .fullScreen
+        present(controller, animated: true, completion: nil)
+      } else {}
+    }
+  }
+
   private var user: User? {
     didSet {
       locationInputView.user = user
       if user?.accountType == .passenger {
         fetchDrivers()
         configureLocationInputActivationView()
+        observeCurrentTrip()
+      } else {
+        observeTrips()
       }
     }
   }
@@ -64,9 +81,13 @@ class HomeController: UIViewController {
   }
 
   override func viewDidAppear(_: Bool) {
-    checkIfUserIsLoggedIn()
+    // checkIfUserIsLoggedIn()
     view.backgroundColor = .backgroundColor
     enableLocationServices()
+  }
+
+  override func viewWillAppear(_: Bool) {
+    guard let trip = trip else { return }
   }
 
   func checkIfUserIsLoggedIn() {
@@ -138,6 +159,26 @@ class HomeController: UIViewController {
     }
   }
 
+  func observeTrips() {
+    Service.shared.observeTrips { trip in
+      self.trip = trip
+    }
+  }
+
+  func observeCurrentTrip() {
+    Service.shared.observeCurrentTrip { trip in
+      self.trip = trip
+      if trip.state == .accepted {
+        self.shouldPresentLoadingView(false)
+        guard let driverUid = trip.driverUid else { return }
+
+        Service.shared.fetchUserData(uid: driverUid) { driver in
+          self.animateRideActionView(shouldShow: true, config: .tripAccepted, user: driver)
+        }
+      }
+    }
+  }
+
   // MARK: - Helpers
 
   func configureUI() {
@@ -200,7 +241,7 @@ class HomeController: UIViewController {
     view.addSubview(locationInputView)
     locationInputView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: locationInputViewHeight)
     inputActionView.alpha = 0
-    UIView.animate(withDuration: 0.5, animations: {
+    UIView.animate(withDuration: 0.3, animations: {
       self.locationInputView.alpha = 1
 
     }) { _ in
@@ -227,9 +268,7 @@ class HomeController: UIViewController {
     case .dismissActionView:
       removeAnnotationsAndOverlays()
       mapView.showAnnotations(mapView.annotations, animated: true)
-      mapView.setCenter(mapView.userLocation.coordinate, animated: true)
-      mapView.region.span.longitudeDelta = 0.03
-      mapView.region.span.latitudeDelta = 0.03
+      centerMapOnUserLocation()
       // mapView.zoomToFit(annotations: mapView.annotations)
       UIView.animate(withDuration: 0.3) {
         self.inputActionView.alpha = 1
@@ -239,7 +278,9 @@ class HomeController: UIViewController {
     }
   }
 
-  func animateRideActionView(shouldShow: Bool, destination: MKPlacemark? = nil) {
+  func animateRideActionView(shouldShow: Bool, destination: MKPlacemark? = nil, config: RideActionViewConfiguration? = nil,
+                             user: User? = nil)
+  {
     let yOrigin = shouldShow ? view.frame.height - rideActionViewHeight : view.frame.height
 
     UIView.animate(withDuration: 0.3) {
@@ -247,8 +288,16 @@ class HomeController: UIViewController {
     }
 
     if shouldShow {
-      guard let destination = destination else { return }
-      rideActionView.destination = destination
+      guard let config = config else { return }
+
+      if let destination = destination {
+        rideActionView.destination = destination
+      }
+
+      if let user = user {
+        rideActionView.user = user
+      }
+      rideActionView.configureUI(withConfig: config)
     }
   }
 }
@@ -347,7 +396,7 @@ extension HomeController: UITableViewDelegate, UITableViewDataSource {
 
       let annotations = self.mapView.annotations.filter { !$0.isKind(of: DriverAnnotation.self) }
       self.mapView.zoomToFit(annotations: annotations)
-      self.animateRideActionView(shouldShow: true, destination: selectedPlacemark)
+      self.animateRideActionView(shouldShow: true, destination: selectedPlacemark, config: .requestRide)
     }
   }
 }
@@ -399,11 +448,24 @@ private extension HomeController {
       mapView.removeOverlay(mapView.overlays[0])
     }
   }
+
+  func centerMapOnUserLocation() {
+    guard let coordinate = locationManager?.location?.coordinate else { return }
+    let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 2000, longitudinalMeters: 2000)
+    mapView.setRegion(region, animated: true)
+  }
 }
 
 // MARK: - MKMapViewDelegate
 
 extension HomeController: MKMapViewDelegate {
+  func mapView(_: MKMapView, didUpdate userLocation: MKUserLocation) {
+    guard let user = user else { return }
+    guard user.accountType == .driver else { return }
+    guard let location = userLocation.location else { return }
+    Service.shared.updateDriverLocation(location: location)
+  }
+
   func mapView(_: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
     if let annotation = annotation as? DriverAnnotation {
       let view = MKAnnotationView(annotation: annotation, reuseIdentifier: annotationIdentifer)
@@ -427,16 +489,73 @@ extension HomeController: MKMapViewDelegate {
   }
 }
 
+// MARK: - RideActionViewDelegate
+
 extension HomeController: RideActionViewDelegate {
+  func cancelTrip() {
+    Service.shared.cancelTrip { error, _ in
+      if let error = error {
+        print("Error deleting trip ...")
+        return
+      }
+      self.animateRideActionView(shouldShow: false)
+      self.removeAnnotationsAndOverlays()
+      self.mapView.showAnnotations(self.mapView.annotations, animated: true)
+      self.mapView.setCenter(self.mapView.userLocation.coordinate, animated: true)
+      self.mapView.region.span.longitudeDelta = 0.03
+      self.mapView.region.span.latitudeDelta = 0.03
+      // mapView.zoomToFit(annotations: mapView.annotations)
+      UIView.animate(withDuration: 0.3) {
+        self.inputActionView.alpha = 1
+        self.configureActionButton(config: .showMenu)
+        self.animateRideActionView(shouldShow: false)
+      }
+    }
+  }
+
   func uploadTrip(_ view: RideActionView) {
     guard let pickupCoordinates = locationManager?.location?.coordinate else { return }
     guard let destinationCoordinates = view.destination?.coordinate else { return }
+    shouldPresentLoadingView(true, message: "Finding your driver ...")
     Service.shared.uploadTrip(pickupCoordinates, destinationCoordinates, completion: { err, _ in
       if let error = err {
         print("Failed to upload \(error)")
       }
 
-      print("Debug : did upload trips")
+      UIView.animate(withDuration: 0.3) {
+        self.rideActionView.frame.origin.y = self.view.frame.height
+      }
     })
+  }
+}
+
+// MARK: - PickupControllerDelegate
+
+extension HomeController: PickupControllerDelegate {
+  func didAcceptTrip(_: Trip) {
+    // trip?.state = .accepted
+    let anno = MKPointAnnotation()
+    anno.coordinate = (trip?.pickupCoordinates)!
+    mapView.addAnnotation(anno)
+    // mapView.selectAnnotation(anno, animated: true)
+
+    let placemark = MKPlacemark(coordinate: (trip?.pickupCoordinates)!)
+    let mapItem = MKMapItem(placemark: placemark)
+    generatePolyline(toDestination: mapItem)
+    mapView.zoomToFit(annotations: mapView.annotations)
+
+    Service.shared.observeTripCancelled(trip: trip!) {
+      self.removeAnnotationsAndOverlays()
+      self.animateRideActionView(shouldShow: false)
+      self.mapView.showAnnotations(self.mapView.annotations, animated: true)
+      self.centerMapOnUserLocation()
+      self.presentAlertController(withTitle: "Oops!", message: "The passenger has cancelled the trip")
+    }
+
+    dismiss(animated: true) {
+      Service.shared.fetchUserData(uid: self.trip?.passengerUid ?? "") { passenger in
+        self.animateRideActionView(shouldShow: true, config: .tripAccepted, user: passenger)
+      }
+    }
   }
 }
