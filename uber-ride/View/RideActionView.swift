@@ -11,11 +11,14 @@ import UIKit
 protocol RideActionViewDelegate: AnyObject {
   func uploadTrip(_ view: RideActionView)
   func cancelTrip()
+  func pickupPassenger()
+  func dropOffPassenger()
 }
 
 enum RideActionViewConfiguration {
   case requestRide
   case tripAccepted
+  case driverArrived
   case pickupPassenger
   case tripInProgress
   case endTrip
@@ -57,7 +60,10 @@ class RideActionView: UIView {
     }
   }
 
-  var config = RideActionViewConfiguration()
+  var config = RideActionViewConfiguration() {
+    didSet { configureUI(withConfig: config) }
+  }
+
   var buttonAction = ButtonAction()
   weak var delegate: RideActionViewDelegate?
   var user: User?
@@ -65,7 +71,6 @@ class RideActionView: UIView {
   private let titleLabel: UILabel = {
     let label = UILabel()
     label.font = UIFont.systemFont(ofSize: 18)
-    label.text = "Test Address"
     label.textAlignment = .center
     return label
   }()
@@ -74,7 +79,6 @@ class RideActionView: UIView {
     let label = UILabel()
     label.textColor = .lightGray
     label.font = UIFont.systemFont(ofSize: 16)
-    label.text = "123 Street"
     label.textAlignment = .center
     return label
   }()
@@ -167,15 +171,15 @@ class RideActionView: UIView {
     case .getDirections:
       print("DEBUG : Not implemented")
     case .pickup:
-      print("DEBUG : Not implemented")
+      delegate?.pickupPassenger()
     case .dropOff:
-      print("DEBUG : Not implemented")
+      delegate?.dropOffPassenger()
     }
   }
 
   // MARK: - Helpers
 
-  func configureUI(withConfig config: RideActionViewConfiguration) {
+  private func configureUI(withConfig config: RideActionViewConfiguration) {
     switch config {
     case .requestRide:
       buttonAction = .requestRide
@@ -197,6 +201,7 @@ class RideActionView: UIView {
 
     case .pickupPassenger:
       titleLabel.text = "Arrived at Passenger Location"
+      addressLabel.text = destination?.address
       buttonAction = .pickup
       actionButton.setTitle(buttonAction.description, for: .normal)
     case .tripInProgress:
@@ -218,6 +223,13 @@ class RideActionView: UIView {
       } else {
         buttonAction = .dropOff
         actionButton.setTitle(buttonAction.description, for: .normal)
+      }
+      titleLabel.text = "Arrived at destination"
+    case .driverArrived:
+      guard let user = user else { return }
+      if user.accountType == .driver {
+        titleLabel.text = "Driver has arrived"
+        addressLabel.text = "Please meet driver at pickup location"
       }
     }
   }

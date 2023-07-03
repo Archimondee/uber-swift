@@ -26,8 +26,13 @@
 		F4DDE7502A19482600EB21B8 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DDE74F2A19482600EB21B8 /* Service.swift */; };
 		F4DDE7522A194D9300EB21B8 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DDE7512A194D9300EB21B8 /* User.swift */; };
 		F4DDE7542A1952B200EB21B8 /* LocationHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4DDE7532A1952B200EB21B8 /* LocationHandler.swift */; };
+		F4E03DD42A4E91EC009262C9 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E03DD32A4E91EC009262C9 /* MenuController.swift */; };
+		F4E03DD62A4E91F9009262C9 /* ContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E03DD52A4E91F9009262C9 /* ContainerController.swift */; };
+		F4E03DD82A4EBBE9009262C9 /* MenuHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4E03DD72A4EBBE9009262C9 /* MenuHeader.swift */; };
 		F4F254E92A0EB3EB00590310 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F4F254E82A0EB3EB00590310 /* GoogleService-Info.plist */; };
 		F4F254EB2A0EB7EE00590310 /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F254EA2A0EB7EE00590310 /* HomeController.swift */; };
+		F4FAA3832A533D2800A034F1 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FAA3822A533D2800A034F1 /* SettingsController.swift */; };
+		F4FAA3852A533FA400A034F1 /* UserInfoHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FAA3842A533FA400A034F1 /* UserInfoHeader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,8 +59,13 @@
 		F4DDE74F2A19482600EB21B8 /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
 		F4DDE7512A194D9300EB21B8 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		F4DDE7532A1952B200EB21B8 /* LocationHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationHandler.swift; sourceTree = "<group>"; };
+		F4E03DD32A4E91EC009262C9 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
+		F4E03DD52A4E91F9009262C9 /* ContainerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerController.swift; sourceTree = "<group>"; };
+		F4E03DD72A4EBBE9009262C9 /* MenuHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuHeader.swift; sourceTree = "<group>"; };
 		F4F254E82A0EB3EB00590310 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F4F254EA2A0EB7EE00590310 /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
+		F4FAA3822A533D2800A034F1 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
+		F4FAA3842A533FA400A034F1 /* UserInfoHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoHeader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +151,8 @@
 				F48869C12A17EED100D89819 /* LocationInputView.swift */,
 				F48869C32A18027300D89819 /* LocationCell.swift */,
 				F461535D2A33B52D003B2E32 /* RideActionView.swift */,
+				F4E03DD72A4EBBE9009262C9 /* MenuHeader.swift */,
+				F4FAA3842A533FA400A034F1 /* UserInfoHeader.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -148,10 +160,11 @@
 		F43718352A0ACBFD008B82DD /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				F43718382A0ACCA9008B82DD /* LoginController.swift */,
-				F49813A82A0D69340001EF93 /* SignUpController.swift */,
+				F4E03DD02A4E91B4009262C9 /* Authentication */,
+				F4E03DCF2A4E91A4009262C9 /* SideMenu */,
 				F4F254EA2A0EB7EE00590310 /* HomeController.swift */,
 				F418FE372A3A3CBA002DCEB0 /* PickupController.swift */,
+				F4FAA3822A533D2800A034F1 /* SettingsController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -171,6 +184,24 @@
 				F4DDE7532A1952B200EB21B8 /* LocationHandler.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		F4E03DCF2A4E91A4009262C9 /* SideMenu */ = {
+			isa = PBXGroup;
+			children = (
+				F4E03DD32A4E91EC009262C9 /* MenuController.swift */,
+				F4E03DD52A4E91F9009262C9 /* ContainerController.swift */,
+			);
+			path = SideMenu;
+			sourceTree = "<group>";
+		};
+		F4E03DD02A4E91B4009262C9 /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				F43718382A0ACCA9008B82DD /* LoginController.swift */,
+				F49813A82A0D69340001EF93 /* SignUpController.swift */,
+			);
+			path = Authentication;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -291,6 +322,8 @@
 				F49813A92A0D69340001EF93 /* SignUpController.swift in Sources */,
 				F49813AB2A0D74730001EF93 /* AuthButton.swift in Sources */,
 				F4F254EB2A0EB7EE00590310 /* HomeController.swift in Sources */,
+				F4FAA3852A533FA400A034F1 /* UserInfoHeader.swift in Sources */,
+				F4FAA3832A533D2800A034F1 /* SettingsController.swift in Sources */,
 				F48869C22A17EED100D89819 /* LocationInputView.swift in Sources */,
 				F4869D2A2A38F19100421987 /* Trip.swift in Sources */,
 				F418FE382A3A3CBA002DCEB0 /* PickupController.swift in Sources */,
@@ -298,7 +331,10 @@
 				F43718202A0ACB73008B82DD /* AppDelegate.swift in Sources */,
 				F43718392A0ACCA9008B82DD /* LoginController.swift in Sources */,
 				F48869C42A18027300D89819 /* LocationCell.swift in Sources */,
+				F4E03DD42A4E91EC009262C9 /* MenuController.swift in Sources */,
 				F4DDE7542A1952B200EB21B8 /* LocationHandler.swift in Sources */,
+				F4E03DD62A4E91F9009262C9 /* ContainerController.swift in Sources */,
+				F4E03DD82A4EBBE9009262C9 /* MenuHeader.swift in Sources */,
 				F43718222A0ACB73008B82DD /* SceneDelegate.swift in Sources */,
 				F461535E2A33B52D003B2E32 /* RideActionView.swift in Sources */,
 				F4DDE7522A194D9300EB21B8 /* User.swift in Sources */,
